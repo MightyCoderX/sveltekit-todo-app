@@ -36,7 +36,15 @@ export async function api(request: RequestEvent, data?: Record<string, unknown>)
             {
                 if(todo.uid === request.params.uid)
                 {
-                    todo.text = data?.text as string;
+                    if(data?.text)
+                    {
+                        todo.text = data.text as string;
+                    }
+
+                    if(data?.done !== undefined)
+                    {
+                        todo.done = data.done as boolean;
+                    }
                 }
                 return todo; 
             });

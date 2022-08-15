@@ -11,6 +11,7 @@ export const PATCH: RequestHandler = async (request) =>
     const data = await request.request.formData();
 
     return api(request, {
-        text: data.get('text')?.toString()
-    })
+        text: data.get('text')?.toString(),
+        done: data.get('done') ? true : false
+    });
 }
