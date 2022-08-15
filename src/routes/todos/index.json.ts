@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import type { Todo } from '../../lib/types/Todo';
+import type { Todo } from '$lib/types/Todo';
 import { api } from './_api';
 
 

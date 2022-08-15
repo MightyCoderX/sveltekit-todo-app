@@ -3,7 +3,7 @@ import type { RequestEvent } from '@sveltejs/kit';
 
 let todos: Todo[] = [];
 
-export async function api(request: RequestEvent, todo?: Todo)
+export async function api(request: RequestEvent, data?: Record<string, unknown>)
 {
     let body = {};
     let status = 500;
@@ -16,11 +16,11 @@ export async function api(request: RequestEvent, todo?: Todo)
             break;
 
         case 'POST':
-            if(!todo) break; 
-            todos.push(todo);
+            if(!data) break; 
+            todos.push(data as Todo);
 
             status = 201;
-            body = todo;
+            body = data;
         
         case 'DELETE':
             status = 200;
@@ -28,7 +28,20 @@ export async function api(request: RequestEvent, todo?: Todo)
 
             todos = todos.filter(todo => todo.uid !== request.params.uid);
             break;
+
+        case 'PATCH':
+            status = 200;
             
+            todos = todos.map(todo =>
+            {
+                if(todo.uid === request.params.uid)
+                {
+                    todo.text = data?.text as string;
+                }
+                return todo; 
+            });
+
+            break;
         
     }
 
