@@ -1,19 +1,21 @@
 <script lang="ts">
+    import type { Todo } from '$lib/types/Todo';
 
+    export let todo: Todo;
 </script>
 
-<div class="todo-item">
-    <form action="" method="">
-        <input type="hidden" name="done" value="">
+<div class="todo-item {todo.done ? 'done' : ''}">
+    <form action="#" method="">
+        <input type="hidden" name="done" value={todo.done}>
         <button aria-label="Mark as done/not done" class="toggle"></button>
     </form>
 
     <form action="" method="" class="text">
-        <input type="text" name="text">
+        <input type="text" name="text" value={todo.text}>
         <button aria-label="Save todo" class="save"></button>
     </form>
 
-    <form action="" method="">
+    <form action="/todos/{todo.uid}.json?_method=DELETE" method="POST">
         <button aria-label="Delete todo" class="delete"></button>
     </form>
 </div>
@@ -47,8 +49,9 @@
     .todo-item input
     {
         flex: 1;
-        padding: 0.5em 2em 0.5em 0.8em;
+        padding: 0.5em 2em 0.5em 0.5em;
         background-color: transparent;
+        font-size: 1rem;
     }
 
     button.toggle
