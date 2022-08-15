@@ -1,5 +1,6 @@
 import type { Todo } from '$lib/types/Todo';
 import type { RequestEvent } from '@sveltejs/kit';
+import { append } from 'svelte/internal';
 
 let todos: Todo[] = [];
 
@@ -16,11 +17,12 @@ export async function api(request: RequestEvent, data?: Record<string, unknown>)
             break;
 
         case 'POST':
-            if(!data) break; 
+            if(!data) break;
             todos.push(data as Todo);
 
             status = 201;
             body = data;
+            break;
         
         case 'DELETE':
             status = 200;
@@ -30,6 +32,7 @@ export async function api(request: RequestEvent, data?: Record<string, unknown>)
             break;
 
         case 'PATCH':
+            if(!data) break;
             status = 200;
             
             todos = todos.map(todo =>
@@ -46,16 +49,20 @@ export async function api(request: RequestEvent, data?: Record<string, unknown>)
                         todo.done = data.done as boolean;
                     }
                 }
-                return todo; 
+                return todo;
             });
+
+            body = todos.find(t => t.uid === request.params.uid) || {};
+
 
             break;
         
     }
 
-    if(request.request.method.toUpperCase() !== 'GET')
+    if(request.request.method.toUpperCase() !== 'GET' 
+        && request.request.headers.get('accept') !== 'application/json')
     {
-        return { 
+        return {
             status: 303,
             headers:
             {
