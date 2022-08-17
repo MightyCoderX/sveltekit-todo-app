@@ -17,5 +17,5 @@ model Todo {
     updatedAt DateTime @updatedAt
 
     text String
-    done Boolean
+    done Boolean @default(false)
 }
