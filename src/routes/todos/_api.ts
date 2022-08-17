@@ -1,8 +1,7 @@
-import type { Todo } from '$lib/types/Todo';
 import type { RequestEvent } from '@sveltejs/kit';
-import { append } from 'svelte/internal';
+import PrismaClient from '$lib/prisma';
 
-let todos: Todo[] = [];
+const prisma = new PrismaClient();
 
 export async function api(request: RequestEvent, data?: Record<string, unknown>)
 {
@@ -12,48 +11,42 @@ export async function api(request: RequestEvent, data?: Record<string, unknown>)
     switch(request.request.method.toUpperCase())
     {
         case 'GET':
-            body = todos;
+            body = await prisma.todo.findMany();
             status = 200;
             break;
 
         case 'POST':
-            if(!data) break;
-            todos.push(data as Todo);
-
             status = 201;
-            body = data;
+            body = await prisma.todo.create({
+                data: {
+                    text: data?.text as string,
+                }
+            });
+
             break;
         
         case 'DELETE':
             status = 200;
-            body = todos.find(todo => todo.uid === request.params.uid) || {};
-
-            todos = todos.filter(todo => todo.uid !== request.params.uid);
+            body = await prisma.todo.delete({
+                where:
+                {
+                    uid: request.params.uid
+                }
+            });
             break;
 
         case 'PATCH':
-            if(!data) break;
             status = 200;
-            
-            todos = todos.map(todo =>
-            {
-                if(todo.uid === request.params.uid)
+            body = await prisma.todo.update({
+                where:
                 {
-                    if(data?.text)
-                    {
-                        todo.text = data.text as string;
-                    }
-
-                    if(data?.done !== undefined)
-                    {
-                        todo.done = data.done as boolean;
-                    }
+                    uid: request.params.uid
+                },
+                data: {
+                    done: data?.done as boolean,
+                    text: data?.text as string
                 }
-                return todo;
             });
-
-            body = todos.find(t => t.uid === request.params.uid) || {};
-
 
             break;
         
