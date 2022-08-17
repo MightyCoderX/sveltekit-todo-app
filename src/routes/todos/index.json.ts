@@ -12,12 +12,8 @@ export const POST: RequestHandler = async (request) =>
 {
     const data = await request.request.formData();
 
-    const todo: Todo = {
-        uid: `${Math.round(Date.now()*Math.random()*10)}`,
-        createdAt: new Date(),
+    return api(request, {
         text: data.get('text')?.toString() || '',
         done: false
-    };
-
-    return api(request, todo);
+    });
 }
